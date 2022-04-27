@@ -1,0 +1,219 @@
+
+
+(define Ok "ok")
+(define Error "error")
+(define Dict "dictionary")
+
+(define make-ok
+  (lambda (val)
+    (cons Ok val)
+  )
+ )
+ 
+(define make-error
+  (lambda (msg)
+    (cons Error msg)
+  )
+ )
+
+(define ok?
+  (lambda (res)
+    (if (pair? res) (if (eq? (car res) Ok) #t #f) #f)
+  )
+ )
+(define error?
+  (lambda (res)
+    (if (pair? res) (if (eq? (car res) Error) #t #f) #f)
+  )
+ )
+
+(define result?
+  (lambda (res)
+    (if (ok? res) #t 
+      (if (error? res) #t
+       #f 
+      )
+    )
+ )
+)
+
+(define result->val
+  (lambda (res)
+    (cdr res)
+  )
+)
+
+
+
+
+(define bind 
+  (lambda (f)
+    (lambda (res) (if (ok? res)
+                   (f (result->val res))
+                   (if (error? res) res (make-error "Binded function recieved none result var")) 
+                  )
+    )
+  )
+)
+
+
+(define make-dict
+  (lambda ()
+    (cons Dict '())
+  )
+)
+
+
+(define dict?
+  (lambda (e)
+    (if (eq? (car e) Dict) #t #f)
+  )
+)
+
+
+(define getValue
+  (lambda (dictPairs k)
+    (if (empty? dictPairs)
+      (make-error "Key not found")
+      (if (pair? (car dictPairs))
+       (
+          if (= (car (car dictPairs)) k)
+            (make-ok (cdr (car dictPairs))) 
+            (getValue (cdr dictPairs) k)
+        )
+        (
+          if (= (car dictPairs) k) 
+          (make-ok (cdr dictPairs)) 
+          (make-error "Key not found")
+        )
+        
+      )
+    )
+  )
+)
+
+(define get
+  (lambda (dict k)
+    (if (dict? dict)  
+      (getValue (cdr dict) k)
+      (make-error "Error: not a dictionary")
+    )
+  )
+)
+
+(define putValue
+  (lambda (dictPairs k v)
+    (if (empty? dictPairs)
+      (cons k v)
+    (if (pair? (car dictPairs))
+      (
+        if (= (car (car dictPairs)) k) 
+          (cons (cons k v) (cdr dictPairs))
+          (cons (car dictPairs) (putValue (cdr dictPairs) k v))
+      )
+      (
+        if (= (car dictPairs) k) 
+          (cons k v)
+          (cons dictPairs (cons k v))
+      )
+    )
+    )
+  )
+)
+
+(define put
+  (lambda (dict k v)
+    (if (dict? dict) 
+      (make-ok (cons (car dict) (putValue (cdr dict) k v)))
+      (make-error "Error: not a dictionary")
+    )
+  )
+)
+
+(define map-dict-inner
+  (lambda (dict dictPairs f)
+    (if (empty? dictPairs)
+      (dict)
+      (
+        if(pair? (car dictPairs))
+          (
+            map-dict-inner
+              (result->val 
+                  (put dict (car (car dictPairs)) (f(cdr (car dictPairs))) )
+              )
+              (cdr dictPairs)
+              f
+          )
+          (result->val (put dict (car dictPairs) (f(cdr dictPairs)) ) )
+      )
+    )
+  )
+)
+
+(define map-dict
+  (lambda (dict f) (
+    if( dict? dict) 
+      (make-ok 
+        (
+          map-dict-inner 
+            (make-dict)
+            (cdr dict)
+            f
+        )
+      )
+      (make-error "Error: value not a dict")
+    )
+  )
+)
+
+
+(define filter-dict-inner 
+  (lambda (dict dictPairs pred) 
+    (if(empty? dictPairs)
+      (dict)
+      (
+       if(pair? (car dictPairs))
+         (
+          if(pred (car (car dictPairs)) (cdr (car dictPairs))) 
+            (filter-dict-inner
+             (result->val (
+                           put dict (car (car dictPairs)) (cdr (car dictPairs)))
+                          )
+             (cdr dictPairs)
+             pred
+             ) 
+            (filter-dict-inner 
+             (dict)
+             (cdr dictPairs)
+             pred
+             )
+          )
+         (
+          if(pred (car dictPairs) (cdr dictPairs))
+            (
+              result->val (
+                put dict (car dictPairs) (cdr dictPairs)
+              )
+            )
+            dict
+         )
+      )
+    )
+  )
+)
+
+(define filter-dict
+    (lambda (dict pred) (
+      if(dict? dict) 
+        (
+        make-ok (
+          filter-dict-inner  
+            (make-dict) 
+            (cdr dict)
+            pred
+          )
+        )
+        (make-error "Error: value not a dict") 
+    )
+  )
+)
