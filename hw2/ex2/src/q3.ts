@@ -1,6 +1,6 @@
-import {  AppExp, Exp, isAppExp, isExp, CExp, Program, isProgram, makeProgram, isIfExp, makeDefineExp, isCExp, makeAppExp, makeIfExp, makeProcExp, makeLetExp, Binding, makeBinding, isLetPlusExp, LetPlusExp, makeLetPlusExp, LetExp} from "./L31-ast";
+import {  AppExp, Exp, isAppExp, isExp, CExp, Program, isProgram, makeProgram, isIfExp, makeDefineExp, isCExp, makeAppExp, makeIfExp, makeProcExp, makeLetExp, Binding, makeBinding, isLetPlusExp, LetPlusExp, makeLetPlusExp, LetExp, parseL31} from "./L31-ast";
 import { Result, makeFailure, isOk, makeOk} from "../shared/result";
-import { isAtomicExp, isDefineExp, isLetExp, isProcExp, makeLitExp, unparseL3 } from "../imp/L3-ast";
+import { isAtomicExp, isDefineExp, isLetExp, isProcExp, makeLitExp, unparseL31 } from "./L31-ast";
 
 /*
 Purpose: Transform L31 AST to L3 AST
@@ -50,3 +50,5 @@ const convertToLet = (exp:LetPlusExp): LetExp =>
 // console.log(JSON.stringify(res));
 // const res2:Result<Program|Exp> = isOk(res)?L31ToL3(res.value):res;
 // console.log(JSON.stringify(res2));
+// console.log(isOk(res2)?unparseL31(res2.value):[])
+        
