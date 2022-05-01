@@ -28,7 +28,7 @@ export const l30ToJS = (exp: Exp | Program): Result<string>  =>
 unparseL30(exp) === errorMSG ? makeFailure(unparseL30(exp)) : makeOk(unparseL30(exp))
 
 const unparseL30 = (exp: Exp | Program | CExp): string  => 
-isBoolExp(exp) ? valueToString(exp.val) :
+isBoolExp(exp) ? boolExpToString(exp.val) :
 isNumExp(exp) ? valueToString(exp.val) :
 isStrExp(exp) ? valueToString(exp.val) :
 
@@ -43,6 +43,7 @@ isLetExp(exp) ? unparseLetExp(exp) :
 isProgram(exp) ? `${map(unparseL30, exp.exps).join(';\n')}` :
 errorMSG;
 
+const boolExpToString = (b: boolean): string => b ? "true" : "false"
 
 const unparseVarRefPrimOp = (exp: VarRef | PrimOp): string =>
 (isVarRef(exp)) ? (isTypeOf(exp.var)) 
@@ -68,6 +69,7 @@ const unparseAppExp = (exp: AppExp): string =>
 (isPrimOp(exp.rator)) ? (exp.rator.op === `not`) ? `(!` + appExpToString(exp) + `)` : `(` + appExpToString(exp) + `)` 
 : (isVarRef(exp.rator)) ? parseRandsWithCommas(exp, exp.rator)
 : unparseL30(exp.rator) + '(' + map(unparseL30, exp.rands).join(",") + ')' 
+
 
 
 const unparseLExps = (les: Exp[]): string =>
@@ -140,9 +142,12 @@ console.log("AST: "); l30ToJSPrint(trty)
 console.log("~~~~~~~~~~~~~~~~~~~~")
 }
 
-let str = `(L3 (define f 3) (define b ((lambda (x y z) (+ x y z)) f 3 4))
-(define s (let ((x 4) (y 5)) (* x y))) 
-(if ((lambda (x) (< x 5)) 4) #t (if (< 3 4) 4 #f))
-)`
+
+
+let str = `(L3 (if (< x 5) #t #f))`
+// let str = `(L3 (define f 3) (define b ((lambda (x y z) (+ x y z)) f 3 4))
+// (define s (let ((x 4) (y 5)) (* x y))) 
+// (if ((lambda (x) (< x 5)) 4) #t (if (< 3 4) 4 #f))
+// )`
 
 // printASTandTS(str)
