@@ -1,4 +1,4 @@
-import {  AppExp, Exp, isAppExp, isExp, CExp, Program, isProgram, makeProgram, isIfExp, makeDefineExp, isCExp, makeAppExp, makeIfExp, makeProcExp, makeLetExp, Binding, makeBinding, isLetPlusExp, LetPlusExp, makeLetPlusExp, LetExp} from "./L31-ast";
+import {  AppExp, Exp, isAppExp, isExp, CExp, Program, isProgram, makeProgram, isIfExp, makeDefineExp, isCExp, makeAppExp, makeIfExp, makeProcExp, makeLetExp, Binding, makeBinding, isLetPlusExp, LetPlusExp, makeLetPlusExp, LetExp, parseL31} from "./L31-ast";
 import { Result, makeFailure, isOk, makeOk} from "../shared/result";
 import { isAtomicExp, isDefineExp, isLetExp, isProcExp, makeLitExp, unparseL3 } from "../imp/L3-ast";
 
@@ -45,8 +45,8 @@ const convertToLet = (exp:LetPlusExp): LetExp =>
         makeLetExp([exp.bindings[0]],[convertToLet(makeLetPlusExp(exp.bindings.slice(1),exp.body))])
 
             
-// const exp:string = '(L31 (let* ((a 1) (b 2) (c 3)) (+ a 5)))'//`(L31 (let* ((a 1) (b 2) (c 3)) (+ a 5)))`;
+// const exp:string = '(L31 (let* ((a 1)) (+ a 5)))'//`(L31 (let* ((a 1) (b 2) (c 3)) (+ a 5)))`;
 // const res:Result<Program|Exp> = parseL31(exp);
 // console.log(JSON.stringify(res));
-// const res2:Result<Program|Exp> = isOk(res)?L31ToL3(res.value):res;
-// console.log(JSON.stringify(res2));
+// // const res2:Result<Program|Exp> = isOk(res)?L31ToL3(res.value):res;
+// // console.log(JSON.stringify(res2));
