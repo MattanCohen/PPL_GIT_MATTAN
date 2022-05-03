@@ -1,3 +1,7 @@
+/*
+I got bored of symbolam so heres my version of it
+*/
+
 
 let e = Math.exp
 let P = Math.pow
